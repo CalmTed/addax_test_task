@@ -124,12 +124,13 @@ const Cell: FC<CellComponentModel> = ({ date, isActive, dispatch, tasks = [] }) 
     }
 
     const handleSetDayData: (list:TaskModel[], target:Sortable | null) => void = (list,target) => {
-        console.log(target?.el.id)
         if(!target || typeof target?.el?.id !== "string"){
             return;
         }
         const newDate = parseInt(target.el.id)
-        const tasksList = list.map(t => ({...t, plannedDate: newDate}));
+        const tasksList = list
+        .filter(t => t.isEditable)
+        .map((t,i) => ({...t, plannedDate: newDate, order: i + 1}));
         dispatch({
             name: ACTION_NAME.SET_TASKS_LIST,
             payload: tasksList

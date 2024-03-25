@@ -98,7 +98,9 @@ const renderCells: (state: StateModel, dispatch: (a: ActionModel) => void) => Re
                     const isActive = dayDate >= selectedDate.getTime() && dayDate < selectedDate.getTime() + (daysInMonth * DAY)
                     
                     const filteredTasks = state.tasks.filter(task => task.labelText.includes(state.filterText))
-                    const cellTasks = [...state.holidays,...filteredTasks].filter(t => t.plannedDate >= dayDate && t.plannedDate < dayDate + DAY)
+                    const cellTasks = [...state.holidays,...filteredTasks]
+                        .filter(t => t.plannedDate >= dayDate && t.plannedDate < dayDate + DAY)
+                        .sort((ta,tb) => ta.order - tb.order)
                     
                     return <Cell
                         key={dayDate}
