@@ -37,7 +37,9 @@ const CellWrapperStyle = styled.div`
     width: 100%;
     height: calc(100% - 3.4em);
     --col-width: calc(100% / 7);
-    --row-height: calc(100% / 4);
+    --rowsNumber: 5;
+    --row-height: calc(var(--h100percent) / var(--rowsNumber));
+    --h100percent: calc(100% - 1.5em);
     #weekDayLabels{
         height: 2.5em;
         width: 100%;
@@ -50,19 +52,23 @@ const CellWrapperStyle = styled.div`
             font-size: 1;
             opacity: 0.6;
         }
+        .w-d-label:nth-last-child(2), .w-d-label:nth-last-child(1){
+            color: var(--color-main);
+        }
     }
     #gridWrapper{
-        height: calc(100% - 3.3em);
+        height: calc(100% - 3.4em);
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        grid-template-rows: repeat(5, 1fr);
+        grid-template-rows: repeat(var(--rowsNumber), var(--row-height));
         gap: 5pt;
         padding: 5pt;
+
         &.fourRows{
-            grid-template-rows: repeat(4, 1fr);
+            --rowsNumber: 4;
         }
         &.sixRows{
-            grid-template-rows: repeat(6, 1fr);
+            --rowsNumber: 6;
         }
     }
 `;
@@ -76,6 +82,7 @@ const renderCells: (state: StateModel, dispatch: (a: ActionModel) => void) => Re
     const numberOfWeeksShown = Math.ceil((daysNeededToAdd + daysInMonth) / 7);
     const initialSelectedDate = selectedDate.getTime() - DAY * daysNeededToAdd;
     const gridRowsClassString = numberOfWeeksShown === 4 ? "fourRows" : numberOfWeeksShown === 6 ? "sixRows" : ""
+
     return <CellWrapperStyle>
         <div id="weekDayLabels">
             {
@@ -89,12 +96,15 @@ const renderCells: (state: StateModel, dispatch: (a: ActionModel) => void) => Re
                 new Array(numberOfWeeksShown * 7).fill("").map( (n,i) => {
                     const dayDate = initialSelectedDate + (DAY * i);
                     const isActive = dayDate >= selectedDate.getTime() && dayDate < selectedDate.getTime() + (daysInMonth * DAY)
-                    // return <></>;
+                    
+                    const filteredTasks = state.tasks.filter(task => task.labelText.includes(state.filterText))
+                    const cellTasks = [...state.holidays,...filteredTasks].filter(t => t.plannedDate >= dayDate && t.plannedDate < dayDate + DAY)
+                    
                     return <Cell
-                        key={i}
+                        key={dayDate}
                         isActive={isActive}
                         date={dayDate}
-                        tasks={[]}
+                        tasks={cellTasks}
                         dispatch={dispatch}
                     />
                 })

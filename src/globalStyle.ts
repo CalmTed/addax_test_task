@@ -23,10 +23,11 @@ export const GlobalStyle = createGlobalStyle`
         cursor: pointer;
         transform-origin: center;
     }
-    button:hover{
+    button:hover, .buton:hover{
         scale: 1.02;
+        cursor: pointer;
     }
-    button: active{
+    button:active, .button:active{
         scale: 0.99;
     }
     input{
